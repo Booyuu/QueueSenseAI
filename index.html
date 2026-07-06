@@ -445,19 +445,25 @@
             const sessionId = "web-user-" + Math.floor(Math.random() * 100000);
 
             function appendMessage(text, isUser = true) {
-                const msgDiv = document.createElement('div');
-                msgDiv.className = isUser ? "flex justify-end mt-4 animate-[fadeIn_0.3s_ease-out]" : "flex justify-start mt-4 animate-[fadeIn_0.3s_ease-out]";
-                
-                const bubbleStr = isUser 
-                    ? `<div class="bg-blue-600/90 text-white px-4 py-2.5 rounded-[18px] rounded-br-sm shadow-sm max-w-[80%]">${text}</div>`
-                    : `<div class="bg-white/10 border border-white/10 text-white px-5 py-4 rounded-[18px] rounded-bl-sm shadow-sm max-w-[90%] backdrop-blur-md">
-                           <p class="text-white/90">${text}</p>
-                       </div>`;
-                
-                msgDiv.innerHTML = bubbleStr;
-                chatMessages.appendChild(msgDiv);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
+    const msgDiv = document.createElement('div');
+    msgDiv.className = isUser
+        ? "flex justify-end mt-4 animate-[fadeIn_0.3s_ease-out]"
+        : "flex justify-start mt-4 animate-[fadeIn_0.3s_ease-out]";
+
+    const bubble = document.createElement('div');
+    const safeText = String(text || '');
+
+    if (isUser) {
+        bubble.className = "bg-blue-600/90 text-white px-4 py-2.5 rounded-[18px] rounded-br-sm shadow-sm max-w-[80%] whitespace-pre-line leading-relaxed";
+    } else {
+        bubble.className = "bg-white/10 border border-white/10 text-white px-5 py-4 rounded-[18px] rounded-bl-sm shadow-sm max-w-[90%] backdrop-blur-md whitespace-pre-line leading-relaxed";
+    }
+
+    bubble.textContent = safeText;
+    msgDiv.appendChild(bubble);
+    chatMessages.appendChild(msgDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
 
             async function handleSend() {
                 const text = chatInput.value.trim();
