@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en" style="scroll-behavior: smooth;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QueueSense AI - Your RP Canteen Queue Assistant</title>
+    
+    <!-- 引入字体库 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fustat:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans:wght@400;500;600;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 配置自定义颜色 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: { 900: '#0B162C', 800: '#152A4A' },
+                        rpGreen: '#00A651',
+                        rpYellow: '#FFCD00',
+                    },
+                    fontFamily: {
+                        fustat: ['Fustat', 'sans-serif'],
+                        schibsted: ['Schibsted Grotesk', 'sans-serif'],
+                        inter: ['Inter', 'sans-serif'],
+                        noto: ['Noto Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f8fafc; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #00A651; }
+        
+        /* FAQ 展开动画 */
+        details > summary { list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 font-noto overflow-x-hidden">
+
+    <!-- 1. 导航栏 -->
+    <nav class="fixed top-0 left-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-slate-100">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <a href="#" class="text-slate-900 text-2xl font-bold font-schibsted tracking-tight flex items-center gap-3">
+                <img src="image-removebg-preview.png" alt="QueueSense Logo" class="h-9 w-auto object-contain">
+                QueueSense AI
+            </a>
+            
+            <div class="hidden md:flex items-center gap-8 text-slate-600 text-[15px] font-medium font-schibsted">
+                <a href="#problem" class="hover:text-slate-900 transition-colors">Problem</a>
+                <a href="#features" class="hover:text-slate-900 transition-colors">Features</a>
+                <a href="#assets" class="hover:text-slate-900 transition-colors">Assets</a>
+                <a href="#faq" class="hover:text-slate-900 transition-colors">FAQ</a>
+            </div>
+
+            <div class="hidden md:flex items-center gap-4">
+                <a href="#demo-bot" class="px-6 h-[40px] flex items-center justify-center bg-slate-900 text-white font-medium font-schibsted rounded-md hover:bg-slate-800 transition-colors">
+                    Try Demo
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 2. 首屏 (Hero Section) & 真实交互接口 -->
+    <section class="relative min-h-screen w-full flex flex-col items-center pt-[140px] pb-24 overflow-hidden">
+        
+        <div class="absolute inset-0 z-0">
+            <video id="hero-video" src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260329_050842_be71947f-f16e-4a14-810c-06e83d23ddb5.mp4" class="absolute top-0 left-1/2 -translate-x-1/2 w-[115%] h-[115%] object-cover object-top" style="opacity: 0; transition: none;" muted playsinline autoplay></video>
+            <div class="absolute inset-0 bg-gradient-to-b from-[#f8fafc] via-[#f8fafc]/80 to-transparent z-10 h-[80%]"></div>
+            <div class="absolute inset-0 bg-white/10 z-10 pointer-events-none"></div>
+        </div>
+
+        <div class="relative z-20 flex flex-col items-center text-center w-full px-6 gap-[28px] max-w-4xl mx-auto">
+            <div class="flex items-center bg-white rounded-full p-1 shadow-sm border border-slate-200">
+                <div class="flex items-center gap-1 bg-slate-900 text-white px-3 py-1 rounded-full text-[12px] font-bold">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                    New
+                </div>
+                <span class="text-slate-600 text-[14px] px-3 font-medium font-inter">
+                    Never waste time queuing again
+                </span>
+            </div>
+
+            <h1 class="text-slate-900 text-[64px] md:text-[80px] font-bold leading-none font-fustat tracking-[-3.2px]">
+                Beat the Canteen Queue.
+            </h1>
+
+            <p class="text-slate-500 text-[18px] md:text-[20px] font-medium max-w-[640px] font-fustat tracking-[-0.2px] leading-relaxed">
+                Your AI-powered Telegram assistant for RP canteens. Check live queue times, find faster stalls, and get food recommendations instantly.
+            </p>
+        </div>
+
+        <!-- Telegram Bot 真实交互区 -->
+        <div id="demo-bot" class="relative z-20 w-full max-w-[800px] mx-auto mt-16 px-6">
+            <div class="w-full bg-black/25 backdrop-blur-2xl border border-white/20 shadow-2xl rounded-[24px] p-6 flex flex-col gap-4">
+                
+                <div class="flex justify-between items-center text-white/90 font-schibsted text-[12px]">
+                    <div class="flex items-center gap-3">
+                        <span class="font-medium flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-rpGreen inline-block animate-pulse"></span>
+                            QueueSense AI Bot (Live Demo)
+                        </span>
+                        <button class="px-2 py-0.5 bg-rpGreen/90 text-slate-900 font-bold rounded uppercase text-[10px] tracking-wider">
+                            RP Exclusive
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-1 font-medium opacity-80">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                        Powered by n8n & RAG
+                    </div>
+                </div>
+
+                <div id="chat-messages" class="w-full bg-transparent flex flex-col gap-5 pt-2 pb-4 font-inter text-[15px] max-h-[300px] overflow-y-auto scroll-smooth">
+                    <div class="flex justify-start">
+                        <div class="bg-white/10 border border-white/10 text-white px-5 py-4 rounded-[18px] rounded-bl-sm shadow-sm max-w-[90%] backdrop-blur-md">
+                            <p class="text-white/90">Hello! 👋 I'm your QueueSense AI. You can ask me things like <br/><span class="text-rpYellow font-mono text-sm mt-1 inline-block">"What's good under $5 at South Canteen?"</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full bg-white rounded-[16px] shadow-inner p-2 flex flex-col gap-2 mt-2 relative">
+                    <div id="typing-indicator" class="absolute -top-6 left-4 text-white/70 text-xs font-medium hidden flex items-center gap-1">
+                        QueueSense AI is typing<span class="animate-bounce">.</span><span class="animate-bounce" style="animation-delay: 0.1s">.</span><span class="animate-bounce" style="animation-delay: 0.2s">.</span>
+                    </div>
+
+                    <div class="w-full h-[48px] flex items-center px-4 relative">
+                        <input 
+                            id="bot-input"
+                            type="text"
+                            placeholder="Type your message here..."
+                            class="w-full h-full bg-transparent outline-none text-[16px] text-slate-800 font-noto placeholder-slate-400"
+                        />
+                        <button id="send-btn" class="w-[36px] h-[36px] bg-slate-900 rounded-full flex items-center justify-center shrink-0 hover:bg-slate-800 transition-colors">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                        </button>
+                    </div>
+                    
+                    <div class="flex justify-between items-center px-2 pb-1">
+                        <div class="flex gap-2">
+                            <button class="flex items-center gap-1.5 text-slate-500 px-2 py-1 hover:bg-slate-100 rounded-md text-[13px] font-medium transition-colors">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line></svg>
+                                Menu
+                            </button>
+                        </div>
+                        <span class="text-slate-400 text-[12px] font-medium pr-2">Ready</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- 2.5 官方合作横幅 -->
+    <section class="bg-white py-10 border-b border-slate-200 relative z-20">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col items-center">
+            <p class="text-slate-400 font-bold text-sm tracking-widest uppercase mb-8">Empowering Campus Life Together</p>
+            <div class="flex items-center justify-center gap-6 md:gap-12 flex-wrap">
+                <img src="image-removebg-preview.png" alt="QueueSense Logo" class="h-16 md:h-20 object-contain">
+                <svg class="w-6 h-6 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                <img src="Republic_Polytechnic_idJxUF24z6_1.jpeg" alt="Republic Polytechnic Logo" class="h-16 md:h-20 object-contain">
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. 问题与解决方案 -->
+    <section id="problem" class="py-24 bg-slate-50 relative z-20">
+        <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
+            <div>
+                <h2 class="text-slate-500 font-bold tracking-widest text-sm uppercase mb-3">The Problem</h2>
+                <h3 class="text-4xl font-bold font-fustat mb-6 text-slate-900 leading-tight">Short breaks.<br>Insanely long queues.</h3>
+                <p class="text-slate-600 text-lg mb-6 leading-relaxed">
+                    RP students have limited time between classes. Walking to the canteen only to find a 25-minute queue at your favorite stall means skipping lunch or risking being late for your next module.
+                </p>
+            </div>
+            <div class="bg-white p-10 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-slate-100 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-2 bg-rpGreen"></div>
+                <h2 class="text-rpGreen font-bold tracking-widest text-sm uppercase mb-3 mt-2">The Solution</h2>
+                <h3 class="text-3xl font-bold font-fustat mb-4 text-slate-900">QueueSense AI</h3>
+                <p class="text-slate-600 text-lg leading-relaxed">
+                    A smart Telegram agent that knows the current canteen situation. We analyze live data to help you decide exactly where to go, what to eat, and how long it will take—before you even leave your classroom.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. 核心功能 -->
+    <section id="features" class="py-24 bg-white border-y border-slate-100 relative z-20">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold font-fustat mb-4 text-slate-900">Powerful Features</h2>
+                <p class="text-slate-500 text-lg max-w-2xl mx-auto">Everything you need to optimize your lunch break, right inside Telegram.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-slate-50 p-8 rounded-2xl border border-slate-200 hover:border-rpGreen hover:shadow-lg transition-all">
+                    <div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center mb-6 text-rpGreen shadow-sm border border-slate-100">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-slate-900">Check Queue Level</h3>
+                    <p class="text-slate-600">Instantly see how crowded South or North canteen is right now.</p>
+                </div>
+                <div class="bg-slate-50 p-8 rounded-2xl border border-slate-200 hover:border-rpYellow hover:shadow-lg transition-all">
+                    <div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center mb-6 text-rpYellow shadow-sm border border-slate-100">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-slate-900">Estimate Waiting Time</h3>
+                    <p class="text-slate-600">Get accurate ETA for specific stalls before you join the line.</p>
+                </div>
+                <div class="bg-slate-50 p-8 rounded-2xl border border-slate-200 hover:border-rpGreen hover:shadow-lg transition-all">
+                    <div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center mb-6 text-rpGreen shadow-sm border border-slate-100">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-slate-900">Recommend Faster Stall</h3>
+                    <p class="text-slate-600">In a rush? Let the AI pivot you to the stall with the shortest line.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. 宣传物料 -->
+    <section id="assets" class="py-24 bg-slate-50 border-b border-slate-100 relative z-20">
+        <div class="max-w-7xl mx-auto px-6">
+            <h2 class="text-4xl font-bold font-fustat mb-12 text-center text-slate-900">Project Assets</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="w-full aspect-video rounded-2xl border-2 border-dashed border-slate-300 bg-white flex items-center justify-center relative overflow-hidden group hover:border-rpGreen hover:shadow-lg transition-all cursor-pointer">
+                    <div class="text-center p-6 relative z-10">
+                        <div class="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center mx-auto mb-4 group-hover:bg-green-50 transition-colors shadow-sm border border-slate-100">
+                            <svg class="w-8 h-8 text-slate-400 group-hover:text-rpGreen transition-colors" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        </div>
+                        <h4 class="font-bold text-lg mb-1 text-slate-900">Explainer Video</h4>
+                        <p class="text-slate-500 text-sm mb-2">Embed your YouTube/MP4 here</p>
+                    </div>
+                </div>
+                <div class="w-full aspect-[4/3] rounded-2xl border-2 border-dashed border-slate-300 bg-white flex items-center justify-center relative overflow-hidden group hover:border-rpYellow hover:shadow-lg transition-all cursor-pointer">
+                    <div class="text-center p-6 relative z-10">
+                        <div class="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center mx-auto mb-4 group-hover:bg-yellow-50 transition-colors shadow-sm border border-slate-100">
+                            <svg class="w-8 h-8 text-slate-400 group-hover:text-yellow-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                        </div>
+                        <h4 class="font-bold text-lg mb-1 text-slate-900">Campaign Poster</h4>
+                        <p class="text-slate-500 text-sm mb-2">Place your marketing graphic here</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. 评价区块 -->
+    <section id="reviews" class="py-24 bg-white relative z-20">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+                <div>
+                    <h2 class="text-4xl font-bold font-fustat mb-4 text-slate-900">Loved by RP Students</h2>
+                    <p class="text-slate-500 text-lg">Real feedback from students using QueueSense AI.</p>
+                </div>
+                <div class="flex items-center gap-3 bg-slate-50 px-5 py-3 rounded-full shadow-sm border border-slate-200">
+                    <svg viewBox="0 0 24 24" class="w-6 h-6"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                    <div class="flex flex-col">
+                        <div class="flex items-center gap-1 text-rpYellow">
+                            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        </div>
+                        <span class="text-xs font-bold text-slate-800">4.9/5 from 120+ Reviews</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-slate-50 p-8 rounded-2xl border border-slate-200">
+                    <p class="text-slate-700 mb-6 italic">"This bot literally saved me from going hungry between my back-to-back IT modules. The queue estimations are surprisingly accurate!"</p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold">AL</div>
+                        <div><p class="font-bold text-slate-900 text-sm">Alex Lin</p><p class="text-xs text-slate-500">Year 2, SOI</p></div>
+                    </div>
+                </div>
+                <div class="bg-slate-50 p-8 rounded-2xl border border-slate-200">
+                    <p class="text-slate-700 mb-6 italic">"The budget food recommendation feature is fantastic. I type in '$4' and it tells me exactly what I can get and where the line is shortest."</p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center font-bold">MT</div>
+                        <div><p class="font-bold text-slate-900 text-sm">Michelle Tan</p><p class="text-xs text-slate-500">Year 1, SOB</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. FAQ -->
+    <section id="faq" class="py-24 bg-slate-50 relative z-20 border-t border-slate-100">
+        <div class="max-w-3xl mx-auto px-6">
+            <h2 class="text-4xl font-bold font-fustat mb-10 text-center text-slate-900">Frequently Asked Questions</h2>
+            <div class="flex flex-col gap-4">
+                
+                <details class="group bg-white p-6 rounded-2xl shadow-sm border border-slate-200 cursor-pointer">
+                    <summary class="flex justify-between items-center font-bold text-lg text-slate-900">
+                        How accurate is the wait time estimation?
+                        <span class="transition-transform group-open:rotate-180">
+                            <svg fill="none" height="24" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"></path></svg>
+                        </span>
+                    </summary>
+                    <p class="text-slate-600 mt-4 leading-relaxed font-inter">
+                        Our wait time is calculated using real-time data combined with historical patterns via our n8n logic. We usually estimate within a 2-3 minute margin of error.
+                    </p>
+                </details>
+
+                <details class="group bg-white p-6 rounded-2xl shadow-sm border border-slate-200 cursor-pointer">
+                    <summary class="flex justify-between items-center font-bold text-lg text-slate-900">
+                        Does it cover all canteens in RP?
+                        <span class="transition-transform group-open:rotate-180">
+                            <svg fill="none" height="24" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"></path></svg>
+                        </span>
+                    </summary>
+                    <p class="text-slate-600 mt-4 leading-relaxed font-inter">
+                        Currently, we fully support South Canteen and North Canteen, including all halal and non-halal stalls. Lawn canteen integration is coming soon!
+                    </p>
+                </details>
+
+                <details class="group bg-white p-6 rounded-2xl shadow-sm border border-slate-200 cursor-pointer">
+                    <summary class="flex justify-between items-center font-bold text-lg text-slate-900">
+                        Do I need an app to use this?
+                        <span class="transition-transform group-open:rotate-180">
+                            <svg fill="none" height="24" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"></path></svg>
+                        </span>
+                    </summary>
+                    <p class="text-slate-600 mt-4 leading-relaxed font-inter">
+                        No extra apps required! As long as you have Telegram installed on your phone or laptop, simply search for our bot and start chatting.
+                    </p>
+                </details>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- 8. Footer -->
+    <footer class="bg-navy-900 pt-16 pb-8 relative z-20">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <div class="md:col-span-2">
+                    <div class="flex items-center gap-2 text-white font-schibsted mb-4">
+                        <img src="image-removebg-preview.png" class="h-8 w-auto object-contain brightness-0 invert" alt="Logo">
+                        <span class="font-bold text-xl text-white">QueueSense AI</span>
+                    </div>
+                    <p class="text-white/60 text-sm max-w-sm leading-relaxed">
+                        Transforming the RP campus experience. Spend less time waiting and more time learning, eating, and connecting.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="text-white font-bold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-sm text-white/60">
+                        <li><a href="#problem" class="hover:text-rpGreen transition">The Problem</a></li>
+                        <li><a href="#features" class="hover:text-rpGreen transition">Features</a></li>
+                        <li><a href="#assets" class="hover:text-rpGreen transition">Project Assets</a></li>
+                        <li><a href="#faq" class="hover:text-rpGreen transition">FAQ</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold mb-4">Legal & Support</h4>
+                    <ul class="space-y-2 text-sm text-white/60">
+                        <li><a href="#" class="hover:text-white transition">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-white transition">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-white transition">Contact Developer</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="w-full h-px bg-white/10 mb-8"></div>
+
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-white/40 text-sm">
+                    &copy; 2026 Republic Polytechnic FYP. Built in Singapore.
+                </p>
+                
+                <div class="flex items-center gap-5">
+                    <a href="#" class="text-white/50 hover:text-white transition-colors">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    </a>
+                    <a href="#" class="text-white/50 hover:text-white transition-colors">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    </a>
+                    <a href="#" class="text-white/50 hover:text-white transition-colors">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 交互脚本与 Telegram Bot API 配置 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. 视频渐变控制
+            const video = document.getElementById('hero-video');
+            if (video) {
+                let rafId = null;
+                let currentOpacity = 0;
+                let fadingOut = false;
+                const animateFade = (targetOpacity, duration) => {
+                    if (rafId) cancelAnimationFrame(rafId);
+                    const startOpacity = currentOpacity;
+                    const startTime = performance.now();
+                    const step = (currentTime) => {
+                        const elapsed = currentTime - startTime;
+                        const progress = Math.min(elapsed / duration, 1);
+                        currentOpacity = startOpacity + (targetOpacity - startOpacity) * progress;
+                        video.style.opacity = currentOpacity;
+                        if (progress < 1) rafId = requestAnimationFrame(step);
+                    };
+                    rafId = requestAnimationFrame(step);
+                };
+                video.addEventListener('loadeddata', () => { fadingOut = false; animateFade(1, 250); });
+                if (video.readyState >= 3) { fadingOut = false; animateFade(1, 250); }
+                video.addEventListener('timeupdate', () => {
+                    if (video.duration - video.currentTime <= 0.55 && !fadingOut) {
+                        fadingOut = true; animateFade(0, 250);
+                    }
+                });
+                video.addEventListener('ended', () => {
+                    video.style.opacity = 0; currentOpacity = 0;
+                    setTimeout(() => {
+                        video.currentTime = 0;
+                        video.play().then(() => { fadingOut = false; animateFade(1, 250); }).catch(() => { video.style.opacity = 1; });
+                    }, 100);
+                });
+                video.addEventListener('play', () => { fadingOut = false; animateFade(1, 250); });
+            }
+
+            // 2. Telegram Bot 真实 API 调用
+            const chatInput = document.getElementById('bot-input');
+            const sendBtn = document.getElementById('send-btn');
+            const chatMessages = document.getElementById('chat-messages');
+            const typingIndicator = document.getElementById('typing-indicator');
+            // 为当前用户生成一个随机的 Session ID 保持上下文
+            const sessionId = "web-user-" + Math.floor(Math.random() * 100000);
+
+            function appendMessage(text, isUser = true) {
+                const msgDiv = document.createElement('div');
+                msgDiv.className = isUser ? "flex justify-end mt-4 animate-[fadeIn_0.3s_ease-out]" : "flex justify-start mt-4 animate-[fadeIn_0.3s_ease-out]";
+                
+                const bubbleStr = isUser 
+                    ? `<div class="bg-blue-600/90 text-white px-4 py-2.5 rounded-[18px] rounded-br-sm shadow-sm max-w-[80%]">${text}</div>`
+                    : `<div class="bg-white/10 border border-white/10 text-white px-5 py-4 rounded-[18px] rounded-bl-sm shadow-sm max-w-[90%] backdrop-blur-md">
+                           <p class="text-white/90">${text}</p>
+                       </div>`;
+                
+                msgDiv.innerHTML = bubbleStr;
+                chatMessages.appendChild(msgDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            async function handleSend() {
+                const text = chatInput.value.trim();
+                if (!text) return;
+
+                appendMessage(text, true);
+                chatInput.value = '';
+                typingIndicator.classList.remove('hidden');
+
+                try {
+                    // =========================================================
+                    // ⚠️ 将下方的 URL 替换为你真实的 n8n Webhook (生产环境链接)
+                    // =========================================================
+                    const YOUR_N8N_WEBHOOK_URL = 'https://n8ngc.codeblazar.org/webhook-test/website-chat'; 
+                    
+                    const response = await fetch(YOUR_N8N_WEBHOOK_URL, {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json' 
+                        },
+                        body: JSON.stringify({ 
+                            message: text,
+                            sessionId: sessionId 
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    typingIndicator.classList.add('hidden');
+                    
+                    // 假设 n8n 传回的数据字段叫 "reply"
+                    if (data && data.reply) {
+                        appendMessage(data.reply, false); 
+                    } else {
+                        appendMessage("Received an empty response from the AI.", false);
+                    }
+
+                } catch (error) {
+                    console.error('Error fetching AI response:', error);
+                    typingIndicator.classList.add('hidden');
+                    // 当你配置好真实 URL 前，这里会捕获错误并显示这条消息
+                    appendMessage('⚠️ Oops, unable to connect to the AI server. Please make sure the n8n workflow is active.', false);
+                }
+            }
+
+            sendBtn.addEventListener('click', handleSend);
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleSend();
+            });
+        });
+    </script>
+</body>
+</html>
