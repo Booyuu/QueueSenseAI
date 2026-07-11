@@ -231,24 +231,21 @@
         <div class="max-w-7xl mx-auto px-6">
             <h2 class="text-4xl font-bold font-fustat mb-12 text-center text-slate-900">Project Assets</h2>
             <div class="grid md:grid-cols-2 gap-8">
-                <div class="w-full aspect-video rounded-2xl border-2 border-dashed border-slate-300 bg-white flex items-center justify-center relative overflow-hidden group hover:border-rpGreen hover:shadow-lg transition-all cursor-pointer">
-                    <div class="text-center p-6 relative z-10">
-                        <div class="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center mx-auto mb-4 group-hover:bg-green-50 transition-colors shadow-sm border border-slate-100">
-                            <svg class="w-8 h-8 text-slate-400 group-hover:text-rpGreen transition-colors" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                        </div>
-                        <h4 class="font-bold text-lg mb-1 text-slate-900">Explainer Video</h4>
-                        <p class="text-slate-500 text-sm mb-2">1.mp4</p>
-                    </div>
-                </div>
-                <div class="w-full aspect-[4/3] rounded-2xl border-2 border-dashed border-slate-300 bg-white flex items-center justify-center relative overflow-hidden group hover:border-rpYellow hover:shadow-lg transition-all cursor-pointer">
-                    <div class="text-center p-6 relative z-10">
-                        <div class="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center mx-auto mb-4 group-hover:bg-yellow-50 transition-colors shadow-sm border border-slate-100">
-                            <svg class="w-8 h-8 text-slate-400 group-hover:text-yellow-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                        </div>
-                        <h4 class="font-bold text-lg mb-1 text-slate-900">Campaign Poster</h4>
-                        <p class="text-slate-500 text-sm mb-2">1.png</p>
-                    </div>
-                </div>
+                <figure class="w-full self-start rounded-2xl border border-slate-200 bg-white overflow-hidden hover:border-rpGreen hover:shadow-lg transition-all">
+                    <video class="block w-full h-auto object-contain bg-black" controls preload="metadata" playsinline aria-label="QueueSense AI explainer video">
+                        <source src="./assets/1.MP4" type="video/mp4">
+                        Your browser does not support HTML5 video.
+                    </video>
+                    <figcaption class="px-5 py-4">
+                        <h4 class="font-bold text-lg text-slate-900">Explainer Video</h4>
+                    </figcaption>
+                </figure>
+                <figure class="w-full self-start rounded-2xl border border-slate-200 bg-white overflow-hidden hover:border-rpYellow hover:shadow-lg transition-all">
+                    <img src="./assets/1.png" alt="QueueSense AI campaign poster" class="block w-full h-auto object-contain" loading="lazy" decoding="async">
+                    <figcaption class="px-5 py-4">
+                        <h4 class="font-bold text-lg text-slate-900">Campaign Poster</h4>
+                    </figcaption>
+                </figure>
             </div>
         </div>
     </section>
